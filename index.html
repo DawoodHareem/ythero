@@ -122,6 +122,18 @@
       text-align: center;
       min-height: 24px;
     }
+    .search-section {
+      margin-top: 32px;
+      width: 100%;
+      background: rgba(255,255,255,0.97);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
     .faq-section {
       margin-top: 36px;
       background: #fff;
@@ -150,6 +162,7 @@
     @media (max-width: 600px) {
       .container { max-width: 98vw; padding: 18px 6vw; }
       .faq-section { padding: 12px 2vw; }
+      .search-section { padding: 12px 2vw; }
     }
   </style>
 </head>
@@ -183,6 +196,17 @@
       <button class="download-btn" type="submit">Download</button>
     </form>
     <div class="result" id="result"></div>
+
+    <!-- Stylish YouTube Search Section -->
+    <div class="search-section">
+      <h2 style="color:#ff0000;font-size:1.3em;margin-bottom:8px;">Search Top YouTube Videos</h2>
+      <form id="searchForm" autocomplete="off" style="width:100%;display:flex;gap:10px;margin-bottom:10px;">
+        <input class="input-box" id="searchInput" type="text" placeholder="Search YouTube..." required style="flex:1;">
+        <button class="download-btn" type="submit" style="padding:10px 18px;font-size:1em;">Search</button>
+      </form>
+      <div id="searchResults" style="width:100%;margin-top:8px;"></div>
+    </div>
+
     <div class="faq-section">
       <div class="faq-title">FAQ & Features</div>
       <ul class="faq-list">
@@ -252,6 +276,69 @@
         result.textContent = 'Error: Could not process this video. Try another link or format.';
       }
     };
-  </script>
-</body>
-</html>
+
+    // --- Stylish YouTube Search Logic ---
+    // Uses the public YouTube Data API v3 (demo with mock data for browser-only use)
+    // For real results, you need a free API key from Google (https://console.cloud.google.com/apis/library/youtube.googleapis.com)
+    // Replace 'YOUR_API_KEY' below with your actual key for real results.
+
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    searchForm.onsubmit = async e => {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (!query) return;
+      searchResults.innerHTML = '<div style="color:#ff0000;">Searching...</div>';
+
+      // --- DEMO: Use YouTube Data API v3 (replace YOUR_API_KEY with your own for real results) ---
+      // If you don't have an API key, you can use mock data below.
+      const API_KEY = 'YOUR_API_KEY'; // <-- Replace with your own API key for real results
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=8&q=${encodeURIComponent(query)}&key=${API_KEY}`;
+
+      try {
+        let videos = [];
+        if (API_KEY === 'YOUR_API_KEY') {
+          // --- Mock Data ---
+          videos = [
+            { id: 'dQw4w9WgXcQ', title: 'Rick Astley - Never Gonna Give You Up', channel: 'RickAstleyVEVO', thumb: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg' },
+            { id: '9bZkp7q19f0', title: 'PSY - GANGNAM STYLE', channel: 'officialpsy', thumb: 'https://i.ytimg.com/vi/9bZkp7q19f0/hqdefault.jpg' },
+            { id: '3JZ_D3ELwOQ', title: 'Mark Ronson - Uptown Funk ft. Bruno Mars', channel: 'MarkRonsonVEVO', thumb: 'https://i.ytimg.com/vi/3JZ_D3ELwOQ/hqdefault.jpg' },
+            { id: 'LsoLEjrDogU', title: 'Charlie Puth - We Don’t Talk Anymore', channel: 'Charlie Puth', thumb: 'https://i.ytimg.com/vi/LsoLEjrDogU/hqdefault.jpg' },
+            { id: 'fRh_vgS2dFE', title: 'Justin Bieber - Sorry', channel: 'JustinBieberVEVO', thumb: 'https://i.ytimg.com/vi/fRh_vgS2dFE/hqdefault.jpg' },
+            { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi - Despacito ft. Daddy Yankee', channel: 'LuisFonsiVEVO', thumb: 'https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg' },
+            { id: 'RgKAFK5djSk', title: 'Wiz Khalifa - See You Again ft. Charlie Puth', channel: 'Wiz Khalifa', thumb: 'https://i.ytimg.com/vi/RgKAFK5djSk/hqdefault.jpg' },
+            { id: 'CevxZvSJLk8', title: 'Katy Perry - Roar', channel: 'KatyPerryVEVO', thumb: 'https://i.ytimg.com/vi/CevxZvSJLk8/hqdefault.jpg' }
+          ];
+        } else {
+          // --- Real API Call ---
+          const res = await fetch(url);
+          const data = await res.json();
+          videos = (data.items || []).map(v => ({
+            id: v.id.videoId,
+            title: v.snippet.title,
+            channel: v.snippet.channelTitle,
+            thumb: v.snippet.thumbnails.high.url
+          }));
+        }
+
+        // --- Render Results ---
+        if (!videos.length) {
+          searchResults.innerHTML = '<div style="color:#ff0000;">No results found.</div>';
+          return;
+        }
+        searchResults.innerHTML = `
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;">
+            ${videos.map(v => `
+              <div style="background:#fff;border-radius:14px;box-shadow:0 2px 8px #ff000033;padding:10px;display:flex;flex-direction:column;align-items:center;transition:box-shadow 0.2s;">
+                <img src="${v.thumb}" alt="${v.title}" style="width:100%;border-radius:10px;box-shadow:0 2px 8px #ff000033;">
+                <div style="margin-top:8px;font-weight:600;color:#ff0000;font-size:1em;text-align:center;">${v.title}</div>
+                <div style="font-size:0.95em;color:#222;text-align:center;">${v.channel}</div>
+                <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" style="margin-top:8px;color:#fff;background:#ff0000;border-radius:8px;padding:6px 14px;text-decoration:none;font-weight:600;box-shadow:0 2px 8px #ff000033;transition:background 0.2s;">Watch</a>
+                <button onclick="document.getElementById('ytLink').value='https://www.youtube.com/watch?v=${v.id}';window.scrollTo({top:0,behavior:'smooth'});" style="margin-top:6px;background:#fff;color:#ff0000;border:1px solid #ff0000;border-radius:8px;padding:5px 12px;font-weight:600;cursor:pointer;">Download</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
