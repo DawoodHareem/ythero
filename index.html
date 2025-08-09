@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Video Downloader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --yt-red: #ff0000;
+      --yt-dark: #181818;
+      --yt-white: #fff;
+      --yt-gradient: linear-gradient(135deg, #ff0000 0%, #fff 100%);
+      --radius: 18px;
+      --shadow: 0 4px 24px 0 rgba(0,0,0,0.12);
+      --transition: 0.25s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--yt-gradient);
+      color: var(--yt-dark);
+      min-height: 100vh;
+      transition: background var(--transition), color var(--transition);
+    }
+    .container {
+      max-width: 480px;
+      margin: 48px auto 0 auto;
+      background: rgba(255,255,255,0.95);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px 28px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    h1 {
+      color: var(--yt-red);
+      font-size: 2.2em;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #ff000033;
+    }
+    .desc {
+      font-size: 1.08em;
+      color: #333;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .input-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .input-label {
+      font-weight: 600;
+      color: var(--yt-red);
+      margin-bottom: 2px;
+    }
+    .input-box {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #ff0000;
+      font-size: 1.08em;
+      outline: none;
+      transition: border 0.2s;
+      background: #fff;
+      color: #181818;
+    }
+    .input-box:focus {
+      border-color: #c00;
+    }
+    .select-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .select-label {
+      font-weight: 600;
+      color: #c00;
+      margin-right: 6px;
+    }
+    .select {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid #ff0000;
+      font-size: 1em;
+      background: #fff;
+      color: #181818;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .download-btn {
+      background: var(--yt-red);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 32px;
+      font-size: 1.15em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: background 0.2s, box-shadow 0.2s;
+      margin-top: 8px;
+      letter-spacing: 1px;
+    }
+    .download-btn:active {
+      background: #c00;
+      box-shadow: 0 2px 8px #ff000033;
+    }
+    .result {
+      margin-top: 18px;
+      font-size: 1.08em;
+      color: #222;
+      text-align: center;
+      min-height: 24px;
+    }
+    .faq-section {
+      margin-top: 36px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 18px 16px;
+      width: 100%;
+    }
+    .faq-title {
+      color: var(--yt-red);
+      font-size: 1.18em;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .faq-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      color: #222;
+      font-size: 1em;
+    }
+    .faq-list li {
+      margin-bottom: 10px;
+      padding-left: 0;
+    }
+    @media (max-width: 600px) {
+      .container { max-width: 98vw; padding: 18px 6vw; }
+      .faq-section { padding: 12px 2vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>YouTube Downloader</h1>
+    <div class="desc">
+      Download any YouTube video in MP4 or MP3 format, up to 1080p.<br>
+      Fast, secure, and free. No registration required.
+    </div>
+    <form id="downloadForm" autocomplete="off">
+      <div class="input-group">
+        <label class="input-label" for="ytLink">YouTube Video Link</label>
+        <input class="input-box" id="ytLink" type="url" placeholder="Paste YouTube link here..." required>
+      </div>
+      <div class="select-group">
+        <span class="select-label">Format:</span>
+        <select class="select" id="format">
+          <option value="mp4">MP4 (Video)</option>
+          <option value="mp3">MP3 (Audio)</option>
+        </select>
+        <span class="select-label">Quality:</span>
+        <select class="select" id="quality">
+          <option value="1080p">1080p</option>
+          <option value="720p">720p</option>
+          <option value="480p">480p</option>
+          <option value="360p">360p</option>
+          <option value="audio">Audio Only</option>
+        </select>
+      </div>
+      <button class="download-btn" type="submit">Download</button>
+    </form>
+    <div class="result" id="result"></div>
+    <div class="faq-section">
+      <div class="faq-title">FAQ & Features</div>
+      <ul class="faq-list">
+        <li><b>What does this do?</b> Downloads YouTube videos or audio in MP4/MP3 formats directly to your device.</li>
+        <li><b>Is it free?</b> Yes, 100% free and no registration required.</li>
+        <li><b>What formats are supported?</b> MP4 (video) and MP3 (audio).</li>
+        <li><b>What qualities are available?</b> Up to 1080p for video, or audio only.</li>
+        <li><b>Is it safe?</b> Yes, downloads are direct and secure.</li>
+        <li><b>Does it work on mobile?</b> Yes, fully responsive and works on all devices.</li>
+        <li><b>Can I download playlists?</b> No, only single videos are supported.</li>
+        <li><b>Why do some downloads fail?</b> Some videos may be restricted or protected by YouTube.</li>
+        <li><b>Is this legal?</b> Download only content you have rights to. Respect YouTube's terms of service.</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    // --- YouTube Download Logic ---
+    // Uses the public API from yt1s.com (for demo purposes, you can swap to another free API)
+    // Note: Free APIs may have limits or downtime. For production, use your own backend.
+
+    const form = document.getElementById('downloadForm');
+    const result = document.getElementById('result');
+
+    form.onsubmit = async e => {
+      e.preventDefault();
+      result.textContent = 'Processing...';
+
+      const link = document.getElementById('ytLink').value.trim();
+      const format = document.getElementById('format').value;
+      const quality = document.getElementById('quality').value;
+
+      // Validate YouTube link
+      if (!/^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(link) && !/^https?:\/\/youtu\.be\//.test(link)) {
+        result.textContent = 'Please enter a valid YouTube video link.';
+        return;
+      }
+
+      // Use yt1s.com API (or similar) for demo
+      // This API may change or be rate-limited; swap to another if needed
+      try {
+        // Step 1: Get video info
+        const infoRes = await fetch('https://yt1s.com/api/ajaxSearch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `q=${encodeURIComponent(link)}&vt=home`
+        });
+        const info = await infoRes.json();
+        if (!info || !info.vid) throw new Error('Video not found.');
+
+        // Step 2: Request conversion
+        const convertRes = await fetch('https://yt1s.com/api/ajaxConvert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `vid=${info.vid}&k=${info.links[format][quality === 'audio' ? 'mp3' : quality].k}`
+        });
+        const convert = await convertRes.json();
+        if (!convert || !convert.dlink) throw new Error('Conversion failed.');
+
+        // Step 3: Show download link
+        result.innerHTML = `
+          <b>Ready!</b> <br>
+          <a href="${convert.dlink}" download target="_blank" style="color:#ff0000;font-weight:600;text-decoration:underline;">
+            Click here to download your ${format.toUpperCase()} (${quality})
+          </a>
+        `;
+      } catch (err) {
+        result.textContent = 'Error: Could not process this video. Try another link or format.';
+      }
+    };
+  </script>
+</body>
+</html>
